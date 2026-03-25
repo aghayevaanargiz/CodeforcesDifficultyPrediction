@@ -43,37 +43,36 @@ Competitive programming platforms assign difficulty ratings to problems based on
 |----------|--------|
 | Baseline | Linear Regression, Ridge Regression |
 | Linear | Support Vector Regression (LinearSVR) |
-| Tree-Based | CatBoost, LightGBM |
-
-### Why LightGBM?
-
-- Handles mixed feature types (numeric, categorical, sparse text features)
-- No feature scaling required
-- Captures non-linear interactions effectively
-- Scalable and efficient with high-dimensional TF-IDF vectors
+| Tree-Based | Random Forest, XGBoost, CatBoost, LightGBM |
 
 ---
 
 ## Results
 
-### Best Model Performance (LightGBM with TF-IDF + Numeric Features)
+### Model Performance Comparison
 
-| Metric | Value |
-|--------|-------|
-| **MAE** | 262 |
-| **RMSE** | 351 |
-| **R²** | 0.80 |
-| **Spearman Correlation** | 0.90 |
+| Model                     | Features Used        | RMSE ↓    | R² ↑     | Spearman ↑ |
+| ------------------------- | -------------------- | --------- | -------- | ---------- |
+| Linear Regression         | Numeric only         | 605.5     | 0.26     | 0.715      |
+| Ridge Regression          | Numeric only         | 605.5     | 0.26     | 0.715      |
+| Random Forest             | Numeric only         | 401.1     | 0.68     | 0.827      |
+| XGBoost                   | Numeric only         | 359.3     | 0.74     | 0.864      |
+| CatBoost                  | Numeric only         | 353.8     | 0.75     | 0.869      |
+| LinearSVR                 | TF-IDF + Numeric     | 769.8     | -0.41    | 0.788      |
+| Ridge Regression          | TF-IDF + Numeric     | 498.0     | 0.48     | 0.742      |
+| LightGBM (tuned)          | TF-IDF + Numeric     | 360.4     | 0.73     | 0.859      |
+| **LightGBM (Final Test)** | **TF-IDF + Numeric** | **351.3** | **0.80** | **0.902**  |
 
-### Model Comparison
 
-| Model | Features | R² | Spearman |
-|-------|----------|-----|----------|
-| Linear Regression | Numeric Only | — | — |
-| Ridge Regression | Numeric Only | — | — |
-| LinearSVR | TF-IDF + Numeric | — | — |
-| CatBoost | Numeric Only | — | — |
-| **LightGBM** | **TF-IDF + Numeric** | **0.80** | **0.90** |
+### Key Observations
+
+| Finding | Insight |
+|---------|---------|
+| Linear models underperform | Ridge (numeric only) achieves R² 0.605 vs LightGBM's stronger ranking performance |
+| TF-IDF + numeric benefits tree models | Ridge with TF-IDF achieves R² 0.498, lower than numeric-only tree models |
+| LinearSVR with text performs poorly | Spearman -0.41 indicates linear models struggle with sparse, high-dimensional text features |
+| LightGBM achieves best ranking | Spearman 0.902 on final test shows excellent relative difficulty ordering |
+| CatBoost and XGBoost strong on numeric-only | Both achieve R² > 0.86 Spearman without text features |
 
 ---
 
@@ -81,11 +80,11 @@ Competitive programming platforms assign difficulty ratings to problems based on
 
 | Finding | Implication |
 |---------|-------------|
-| Problem index (contest order) is the strongest predictor (ρ ≈ 0.74) | Contest structure encodes difficulty progression |
-| Time limit shows moderate correlation (ρ ≈ 0.46) | Harder problems allow more computational time |
-| Textual features provide complementary semantic signals | Longer descriptions weakly correlate with higher difficulty |
+| Problem index is the strongest predictor | Contest order encodes difficulty progression |
+| Time limit shows moderate correlation | Harder problems allow more computational time |
 | Tree-based models outperform linear models | Difficulty prediction requires capturing non-linear patterns |
-| Spearman correlation > 0.90 | Model preserves relative difficulty ordering effectively |
+| Text features benefit ranking when paired with tree models | TF-IDF + LightGBM achieves best Spearman correlation |
+| LinearSVR with TF-IDF fails | High-dimensional sparse features degrade linear model performance |
 
 ---
 
@@ -96,8 +95,6 @@ All experiments were tracked using MLflow to ensure reproducibility:
 - Hyperparameters and evaluation metrics logged for each run
 - Numeric-only and text-augmented experiments compared
 - Final model pipeline stored as versioned artifact
-- Seamless integration with scikit-learn pipelines
 
 **Advantages:** Centralized dashboard for model comparison, reproducible preprocessing, minimal setup overhead.
 
----

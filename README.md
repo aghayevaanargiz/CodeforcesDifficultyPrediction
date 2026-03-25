@@ -18,7 +18,7 @@ Competitive programming platforms assign difficulty ratings to problems based on
 
 ## Dataset
 
-Dataset used for this project is avaialble at [Hugging Face](https://huggingface.co/datasets/open-r1/codeforces)
+Dataset used for this project is available at [Hugging Face](https://huggingface.co/datasets/open-r1/codeforces)
 
 | Attribute | Description |
 |-----------|-------------|
